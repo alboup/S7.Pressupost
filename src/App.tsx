@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './app.css';
 
 interface ServiceOptions {
@@ -22,14 +23,29 @@ const NumberInput = ({ name, value, onChange }: { name: string; value: number; o
   );
 };
 
-const App = () => {
-  const [casellesSeleccionades, setCasellesSeleccionades] = useState<ServiceOptions>({
-    webPage: false,
-    seoConsulting: false,
-    googleAdsCampaign: false,
-    numPages: 1,
-    numLanguages: 1,
+const Benvinguda = () => (
+  <div>
+    <h1>Benvinguts a la nostra web!</h1>
+    <p>Aquí podràs seleccionar els serveis que desitges i calcular el cost total.</p>
+    <Link to="/seleccio">Comença ara</Link>
+  </div>
+);
+
+const Seleccio = () => {
+  const [casellesSeleccionades, setCasellesSeleccionades] = useState<ServiceOptions>(() => {
+    const savedState = localStorage.getItem('serviceOptions');
+    return savedState ? JSON.parse(savedState) : {
+      webPage: false,
+      seoConsulting: false,
+      googleAdsCampaign: false,
+      numPages: 1,
+      numLanguages: 1,
+    };
   });
+
+  useEffect(() => {
+    localStorage.setItem('serviceOptions', JSON.stringify(casellesSeleccionades));
+  }, [casellesSeleccionades]);
 
   const calcularPreuTotal = () => {
     let preuTotal = 0;
@@ -83,10 +99,9 @@ const App = () => {
       </label>
 
       {casellesSeleccionades.webPage && (
-        <div style={{border: '3px solid black', borderRadius: '10px', padding: '15px', margin: '15px 0'}}>
+        <div>
           <label>
-            Nombre de pàgines:
-            <NumberInput name="numPages" value={casellesSeleccionades.numPages} onChange={handleWebPageOptionsChange} />
+            Nombre de pàgines            <NumberInput name="numPages" value={casellesSeleccionades.numPages} onChange={handleWebPageOptionsChange} />
           </label>
           <br />
           <br />
@@ -104,30 +119,38 @@ const App = () => {
         <input
           type="checkbox"
           name="seoConsulting"
-          checked={
-            casellesSeleccionades.seoConsulting}
-            onChange={handleCanviCasellaSeleccionada}
-          />
-        </label>
-    
-        <br />
-    
-        <label>
-          Una Campanya de Google Ads (200 €):
-          <input
-            type="checkbox"
-            name="googleAdsCampaign"
-            checked={casellesSeleccionades.googleAdsCampaign}
-            onChange={handleCanviCasellaSeleccionada}
-          />
-        </label>
-    
-        <br />
-    
-        <p>Preu Total: {preuTotal} €</p>
-      </div>
-    );
-    };
-    
-    export default App;
-    
+          checked={casellesSeleccionades.seoConsulting}
+          onChange={handleCanviCasellaSeleccionada}
+        />
+      </label>
+
+      <br />
+
+      <label>
+        Una Campanya de Google Ads (200 €):
+        <input
+          type="checkbox"
+          name="googleAdsCampaign"
+          checked={casellesSeleccionades.googleAdsCampaign}
+          onChange={handleCanviCasellaSeleccionada}
+        />
+      </label>
+
+      <br />
+
+      <p>Preu Total: {preuTotal} €</p>
+    </div>
+  );
+};
+
+const App = () => (
+  <Router>
+    <Routes>
+      <Route path="/seleccio" element={<Seleccio />} />
+      <Route path="/" element={<Benvinguda />} />
+    </Routes>
+  </Router>
+);
+
+export default App;
+
