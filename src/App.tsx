@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
 import './app.css';
 
-
+interface ServiceOptions {
+  webPage: boolean;
+  seoConsulting: boolean;
+  googleAdsCampaign: boolean;
+  numPages?: number;
+  numLanguages?: number;
+}
 
 const App = () => {
-  const [casellesSeleccionades, setCasellesSeleccionades] = useState({
+  const [casellesSeleccionades, setCasellesSeleccionades] = useState<ServiceOptions>({
     webPage: false,
-    seoCampaign: false,
-    advertisingCampaign: false,
+    seoConsulting: false,
+    googleAdsCampaign: false,
+    numPages: 1,
+    numLanguages: 1,
   });
 
   const calcularPreuTotal = () => {
@@ -15,13 +23,14 @@ const App = () => {
 
     if (casellesSeleccionades.webPage) {
       preuTotal += 500;
+      preuTotal += (casellesSeleccionades.numPages || 0) * (casellesSeleccionades.numLanguages || 0) * 30;
     }
 
-    if (casellesSeleccionades.seoCampaign) {
+    if (casellesSeleccionades.seoConsulting) {
       preuTotal += 300;
     }
 
-    if (casellesSeleccionades.advertisingCampaign) {
+    if (casellesSeleccionades.googleAdsCampaign) {
       preuTotal += 200;
     }
 
@@ -37,12 +46,23 @@ const App = () => {
     }));
   };
 
+  const handleWebPageOptionsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+
+    setCasellesSeleccionades((casellesPrevSeleccionades) => ({
+      ...casellesPrevSeleccionades,
+      [name]: Number(value),
+    }));
+  };
+
   const preuTotal = calcularPreuTotal();
 
   return (
     <div>
+      <h2>Què desitja fer?</h2>
+
       <label>
-        Pàgina Web (500 €):
+        Una Pàgina Web (500 €):
         <input
           type="checkbox"
           name="webPage"
@@ -51,14 +71,29 @@ const App = () => {
         />
       </label>
 
+      {casellesSeleccionades.webPage && (
+        <div style={{border: '3px solid black', borderRadius: '10px', padding: '15px', margin: '15px 0'}}>
+          <label>
+            Nombre de pàgines:
+            <input type="number" name="numPages" value={casellesSeleccionades.numPages} min="1" onChange={handleWebPageOptionsChange} />
+          </label>
+          <br />
+          <br />
+          <label>
+            Nombre d'idiomes:
+            <input type="number" name="numLanguages" value={casellesSeleccionades.numLanguages} min="1" onChange={handleWebPageOptionsChange} />
+          </label>
+        </div>
+      )}
+
       <br />
 
       <label>
-        Campanya SEO (300 €):
+        Una Consultoria SEO (300 €):
         <input
           type="checkbox"
-          name="seoCampaign"
-          checked={casellesSeleccionades.seoCampaign}
+          name="seoConsulting"
+          checked={casellesSeleccionades.seoConsulting}
           onChange={handleCanviCasellaSeleccionada}
         />
       </label>
@@ -66,11 +101,11 @@ const App = () => {
       <br />
 
       <label>
-        Campanya de Publicitat (200 €):
+        Una Campanya de Google Ads (200 €):
         <input
           type="checkbox"
-          name="advertisingCampaign"
-          checked={casellesSeleccionades.advertisingCampaign}
+          name="googleAdsCampaign"
+          checked={casellesSeleccionades.googleAdsCampaign}
           onChange={handleCanviCasellaSeleccionada}
         />
       </label>
