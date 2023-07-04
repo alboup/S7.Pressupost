@@ -5,9 +5,22 @@ interface ServiceOptions {
   webPage: boolean;
   seoConsulting: boolean;
   googleAdsCampaign: boolean;
-  numPages?: number;
-  numLanguages?: number;
+  numPages: number;
+  numLanguages: number;
 }
+
+const NumberInput = ({ name, value, onChange }: { name: string; value: number; onChange: (name: string, value: number) => void }) => {
+  const increment = () => onChange(name, value + 1);
+  const decrement = () => value > 1 && onChange(name, value - 1);
+
+  return (
+    <div>
+      <button onClick={decrement}>-</button>
+      <input type="text" name={name} value={value} readOnly />
+      <button onClick={increment}>+</button>
+    </div>
+  );
+};
 
 const App = () => {
   const [casellesSeleccionades, setCasellesSeleccionades] = useState<ServiceOptions>({
@@ -23,7 +36,7 @@ const App = () => {
 
     if (casellesSeleccionades.webPage) {
       preuTotal += 500;
-      preuTotal += (casellesSeleccionades.numPages || 0) * (casellesSeleccionades.numLanguages || 0) * 30;
+      preuTotal += casellesSeleccionades.numPages * casellesSeleccionades.numLanguages * 30;
     }
 
     if (casellesSeleccionades.seoConsulting) {
@@ -46,12 +59,10 @@ const App = () => {
     }));
   };
 
-  const handleWebPageOptionsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-
+  const handleWebPageOptionsChange = (name: string, value: number) => {
     setCasellesSeleccionades((casellesPrevSeleccionades) => ({
       ...casellesPrevSeleccionades,
-      [name]: Number(value),
+      [name]: value,
     }));
   };
 
@@ -75,13 +86,13 @@ const App = () => {
         <div style={{border: '3px solid black', borderRadius: '10px', padding: '15px', margin: '15px 0'}}>
           <label>
             Nombre de pàgines:
-            <input type="number" name="numPages" value={casellesSeleccionades.numPages} min="1" onChange={handleWebPageOptionsChange} />
+            <NumberInput name="numPages" value={casellesSeleccionades.numPages} onChange={handleWebPageOptionsChange} />
           </label>
           <br />
           <br />
           <label>
             Nombre d'idiomes:
-            <input type="number" name="numLanguages" value={casellesSeleccionades.numLanguages} min="1" onChange={handleWebPageOptionsChange} />
+            <NumberInput name="numLanguages" value={casellesSeleccionades.numLanguages} onChange={handleWebPageOptionsChange} />
           </label>
         </div>
       )}
@@ -93,28 +104,30 @@ const App = () => {
         <input
           type="checkbox"
           name="seoConsulting"
-          checked={casellesSeleccionades.seoConsulting}
-          onChange={handleCanviCasellaSeleccionada}
-        />
-      </label>
-
-      <br />
-
-      <label>
-        Una Campanya de Google Ads (200 €):
-        <input
-          type="checkbox"
-          name="googleAdsCampaign"
-          checked={casellesSeleccionades.googleAdsCampaign}
-          onChange={handleCanviCasellaSeleccionada}
-        />
-      </label>
-
-      <br />
-
-      <p>Preu Total: {preuTotal} €</p>
-    </div>
-  );
-};
-
-export default App;
+          checked={
+            casellesSeleccionades.seoConsulting}
+            onChange={handleCanviCasellaSeleccionada}
+          />
+        </label>
+    
+        <br />
+    
+        <label>
+          Una Campanya de Google Ads (200 €):
+          <input
+            type="checkbox"
+            name="googleAdsCampaign"
+            checked={casellesSeleccionades.googleAdsCampaign}
+            onChange={handleCanviCasellaSeleccionada}
+          />
+        </label>
+    
+        <br />
+    
+        <p>Preu Total: {preuTotal} €</p>
+      </div>
+    );
+    };
+    
+    export default App;
+    
