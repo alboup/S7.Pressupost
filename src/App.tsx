@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import './app.css';
+
+
 
 const App = () => {
   const [casellesSeleccionades, setCasellesSeleccionades] = useState({
