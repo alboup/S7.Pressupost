@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './app.css';
+import Modal from './components/Modal';
 
 interface ServiceOptions {
   webPage: boolean;
@@ -32,6 +33,7 @@ const Benvinguda = () => (
 );
 
 const Seleccio = () => {
+  const [showModal, setShowModal] = useState(false);
   const [casellesSeleccionades, setCasellesSeleccionades] = useState<ServiceOptions>(() => {
     const savedState = localStorage.getItem('serviceOptions');
     return savedState ? JSON.parse(savedState) : {
@@ -101,13 +103,24 @@ const Seleccio = () => {
       {casellesSeleccionades.webPage && (
         <div>
           <label>
-            Nombre de pàgines            <NumberInput name="numPages" value={casellesSeleccionades.numPages} onChange={handleWebPageOptionsChange} />
+            Nombre de pàgines
+            <NumberInput name="numPages" value={casellesSeleccionades.numPages} onChange={handleWebPageOptionsChange} />
+            <button className='ajuda' onClick={() => setShowModal(true)}>&#x2139;</button>
+            <Modal show={showModal} onClose={() => setShowModal(false)}>
+              <h2>Ajuda</h2>
+              <p>Aquí pots especificar el nombre de pàgines que necessites per a la teva web. Cada pàgina té un cost addicional.</p>
+            </Modal>
           </label>
           <br />
           <br />
           <label>
             Nombre d'idiomes:
             <NumberInput name="numLanguages" value={casellesSeleccionades.numLanguages} onChange={handleWebPageOptionsChange} />
+            <button className='ajuda' onClick={() => setShowModal(true)}>&#x2139;</button>
+            <Modal show={showModal} onClose={() => setShowModal(false)}>
+              <h2>Ajuda</h2>
+              <p>Aquí pots especificar en quants idiomes vols que la teva web estigui disponible. Cada idioma addicional té un cost addicional.</p>
+            </Modal>
           </label>
         </div>
       )}
